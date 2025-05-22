@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TodoListComposable(modifier: Modifier = Modifier, viewModel: TaskViewModel = viewModel()) {
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()
+    val filter by viewModel.filter.collectAsStateWithLifecycle()
     Column(modifier = modifier) {
         Row {
             Button(onClick = {
@@ -27,24 +28,25 @@ fun TodoListComposable(modifier: Modifier = Modifier, viewModel: TaskViewModel =
             }) {
                 Text("Add Random Task")
             }
+
+            Checkbox(checked = filter, onCheckedChange = {
+                viewModel.toggleFilter()
+            })
         }
 
         tasks.forEach { task ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .clickable {
-                        viewModel.deleteTask(task.id)
-                    }
-            ) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .clickable {
+                    viewModel.deleteTask(task.id)
+                }) {
                 Text(
                     text = task.title,
                     modifier = Modifier.weight(1f),
                     style = if (task.isCompleted) TextStyle(textDecoration = TextDecoration.LineThrough) else TextStyle()
                 )
-                Checkbox(
-                    checked = task.isCompleted,
+                Checkbox(checked = task.isCompleted,
                     onCheckedChange = { viewModel.taskCompleted(task.id) })
             }
         }
