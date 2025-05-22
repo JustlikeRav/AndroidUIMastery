@@ -25,7 +25,9 @@ fun TodoListComposable(modifier: Modifier = Modifier, viewModel: TaskViewModel =
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .clickable { }
+                    .clickable {
+                        viewModel.taskCompleted(task.id)
+                    }
             ) {
                 Text(
                     text = task.title,
