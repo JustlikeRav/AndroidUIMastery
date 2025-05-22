@@ -17,9 +17,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TodoListComposable(viewModel: TaskViewModel = viewModel()) {
+fun TodoListComposable(modifier: Modifier = Modifier, viewModel: TaskViewModel = viewModel()) {
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()
-    Column {
+    Column(modifier = modifier) {
         tasks.forEach { task ->
             Row(
                 modifier = Modifier
