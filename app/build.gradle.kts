@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.rav.androiduimastery"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.rav.androiduimastery"
