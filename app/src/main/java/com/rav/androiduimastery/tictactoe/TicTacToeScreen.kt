@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -25,6 +26,10 @@ fun TicTacToeScreen(modifier: Modifier = Modifier, vm: TicTacToeViewModel = view
     val grid = gameState.grid
     val isGameOver = gameState.isGameOver
 
+    LaunchedEffect(isGameOver) {
+        println("ravtest: GameOver: $isGameOver")
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         grid.forEachIndexed { i, row ->
             Row(
@@ -39,7 +44,7 @@ fun TicTacToeScreen(modifier: Modifier = Modifier, vm: TicTacToeViewModel = view
                             .fillMaxSize()
                             .background(Color.White)
                             .border(1.dp, color = Color.DarkGray)
-                            .clickable(enabled = true, onClick = {
+                            .clickable(enabled = isGameOver.not(), onClick = {
                                 vm.playMove(Pair(i, j))
                             })
                     ) {
