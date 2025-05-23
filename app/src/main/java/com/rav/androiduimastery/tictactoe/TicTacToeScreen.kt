@@ -23,7 +23,6 @@ fun TicTacToeScreen(modifier: Modifier = Modifier, vm: TicTacToeViewModel = view
     val gameState by vm.gameState.collectAsStateWithLifecycle()
 
     val grid = gameState.grid
-    val currentPlayer = gameState.currentPlayer
     val isGameOver = gameState.isGameOver
 
     Column(modifier = modifier.fillMaxSize()) {

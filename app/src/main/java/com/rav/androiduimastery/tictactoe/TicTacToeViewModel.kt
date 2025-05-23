@@ -9,21 +9,30 @@ class TicTacToeViewModel : ViewModel() {
     private val _gameState = MutableStateFlow<GameState>(GameState(currentPlayer = Player.P_X))
     val gameState = _gameState.asStateFlow()
 
+    private var totalCells: Int = 0
+    private var totalMoves: Int = 0
+
     init {
         val newGrid = listOf(
             listOf<Cell>(Cell.NULL, Cell.NULL, Cell.NULL),
             listOf<Cell>(Cell.NULL, Cell.NULL, Cell.NULL),
             listOf<Cell>(Cell.NULL, Cell.NULL, Cell.NULL),
         )
+
+        if (newGrid.isNotEmpty()) {
+            totalCells = newGrid.size * newGrid[0].size
+        }
+
         _gameState.update {
             GameState(
-                grid = newGrid,
-                currentPlayer = Player.P_X
+                grid = newGrid, currentPlayer = Player.P_X
             )
         }
     }
 
     fun playMove(position: Pair<Int, Int>) {
+        totalMoves++
+
         val currentPlayer = _gameState.value.currentPlayer
         val currentGrid = _gameState.value.grid
         val newGameState = GameState(
@@ -38,8 +47,8 @@ class TicTacToeViewModel : ViewModel() {
                         }
                     }
                 } else row
-            },
-            currentPlayer = if (currentPlayer == Player.P_X) Player.P_O else Player.P_X
+            }, currentPlayer = if (currentPlayer == Player.P_X) Player.P_O else Player.P_X,
+            isGameOver = totalMoves == totalCells
         )
 
         _gameState.update {
