@@ -24,6 +24,26 @@ class TicTacToeViewModel : ViewModel() {
     }
 
     fun playMove(position: Pair<Int, Int>) {
+        val currentPlayer = _gameState.value.currentPlayer
+        val currentGrid = _gameState.value.grid
+        val newGameState = GameState(
+            grid = currentGrid.mapIndexed { i, row ->
+                if (i == position.first) {
+                    row.mapIndexed { j, cell ->
+                        if (j == position.second) {
+                            if (currentPlayer == Player.P_X) Cell.X
+                            else Cell.O
+                        } else {
+                            cell
+                        }
+                    }
+                } else row
+            },
+            currentPlayer = if (currentPlayer == Player.P_X) Player.P_O else Player.P_X
+        )
 
+        _gameState.update {
+            newGameState
+        }
     }
 }

@@ -27,13 +27,13 @@ fun TicTacToeScreen(modifier: Modifier = Modifier, vm: TicTacToeViewModel = view
     val isGameOver = gameState.isGameOver
 
     Column(modifier = modifier.fillMaxSize()) {
-        grid.forEach { row ->
+        grid.forEachIndexed { i, row ->
             Row(
                 Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                row.forEach { cell ->
+                row.forEachIndexed { j, cell ->
                     Box(
                         Modifier
                             .weight(1f)
@@ -41,7 +41,7 @@ fun TicTacToeScreen(modifier: Modifier = Modifier, vm: TicTacToeViewModel = view
                             .background(Color.White)
                             .border(1.dp, color = Color.DarkGray)
                             .clickable(enabled = true, onClick = {
-                                
+                                vm.playMove(Pair(i, j))
                             })
                     ) {
                         if (cell != Cell.NULL) {
