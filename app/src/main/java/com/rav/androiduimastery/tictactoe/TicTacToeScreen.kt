@@ -24,10 +24,11 @@ fun TicTacToeScreen(modifier: Modifier = Modifier, vm: TicTacToeViewModel = view
     val gameState by vm.gameState.collectAsStateWithLifecycle()
 
     val grid = gameState.grid
+    val winnerCells = gameState.winnerCells
     val isGameOver = gameState.isGameOver
 
-    LaunchedEffect(isGameOver) {
-        println("ravtest: GameOver: $isGameOver")
+    LaunchedEffect(grid) {
+        println("ravtest: GameOver: $winnerCells")
     }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -38,11 +39,12 @@ fun TicTacToeScreen(modifier: Modifier = Modifier, vm: TicTacToeViewModel = view
                     .weight(1f)
             ) {
                 row.forEachIndexed { j, cell ->
+                    val cellColor = if (winnerCells.contains(Pair(i, j))) Color.Green else Color.White
                     Box(
                         Modifier
                             .weight(1f)
                             .fillMaxSize()
-                            .background(Color.White)
+                            .background(cellColor)
                             .border(1.dp, color = Color.DarkGray)
                             .clickable(enabled = isGameOver.not(), onClick = {
                                 vm.playMove(Pair(i, j))

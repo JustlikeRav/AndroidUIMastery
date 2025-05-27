@@ -47,9 +47,12 @@ class TicTacToeViewModel : ViewModel() {
                 }
             } else row
         }
+        val winnerCells = isWinner(position, newGrid)
         val newGameState = GameState(
-            grid = newGrid, currentPlayer = if (currentPlayer == Player.P_X) Player.P_O else Player.P_X,
-            isGameOver = totalMoves == totalCells || isWinner(position, newGrid)
+            grid = newGrid,
+            currentPlayer = if (currentPlayer == Player.P_X) Player.P_O else Player.P_X,
+            isGameOver = totalMoves == totalCells || winnerCells.isNotEmpty(),
+            winnerCells = winnerCells
         )
 
         _gameState.update {
@@ -57,24 +60,38 @@ class TicTacToeViewModel : ViewModel() {
         }
     }
 
-    private fun isWinner(position: Pair<Int, Int>, newGrid: List<List<Cell>>): Boolean {
-        return isWinnerHorizontally(position, newGrid) || isWinnerVertically(position, newGrid) || isWinnerDiagonally(position, newGrid)
+    private fun isWinner(position: Pair<Int, Int>, newGrid: List<List<Cell>>): Set<Pair<Int, Int>> {
+        val ansHorizontal = isWinnerHorizontally(position, newGrid)
+        val ansVertical = isWinnerVertically(position, newGrid)
+        val ansDiagonally1 = isWinnerDiagonally1(position, newGrid)
+        val ansDiagonally2 = isWinnerDiagonally2(position, newGrid)
+
+        return when {
+            ansHorizontal.isNotEmpty() -> ansHorizontal
+            ansVertical.isNotEmpty() -> ansVertical
+            ansDiagonally1.isNotEmpty() -> ansDiagonally1
+            ansDiagonally2.isNotEmpty() -> ansDiagonally2
+            else -> emptySet<Pair<Int, Int>>()
+        }
     }
 
-    private fun isWinnerHorizontally(position: Pair<Int, Int>, grid: List<List<Cell>>): Boolean {
+    private fun isWinnerHorizontally(position: Pair<Int, Int>, grid: List<List<Cell>>): Set<Pair<Int, Int>> {
         val currentPlayer = _gameState.value.currentPlayer
         val cell = if (currentPlayer == Player.P_X) Cell.X else Cell.O
 
+        val winnerPositions = mutableSetOf<Pair<Int, Int>>()
+
         val row = grid[position.first]
 
-        row.forEach {
-            if (it != cell) return false
+        row.forEachIndexed { i, mCell ->
+            if (mCell != cell) return emptySet()
+            else winnerPositions.add(Pair<Int, Int>(position.first, i))
         }
 
-        return true
+        return winnerPositions
     }
 
-    private fun isWinnerVertically(position: Pair<Int, Int>, grid: List<List<Cell>>): Boolean {
+    private fun isWinnerVertically(position: Pair<Int, Int>, grid: List<List<Cell>>): Set<Pair<Int, Int>> {
         val column = grid.flatMap { row ->
             row.mapIndexedNotNull { j, cell ->
                 if (j == position.second) cell
@@ -82,36 +99,42 @@ class TicTacToeViewModel : ViewModel() {
             }
         }
 
+        val winnerPositions = mutableSetOf<Pair<Int, Int>>()
+
         val currentPlayer = _gameState.value.currentPlayer
         val cell = if (currentPlayer == Player.P_X) Cell.X else Cell.O
 
-        column.forEach {
-            if (it != cell) return false
+        column.forEachIndexed { i, mCell ->
+            if (mCell != cell) return emptySet()
+            else winnerPositions.add(Pair<Int, Int>(i, position.second))
         }
 
-        return true
+        return winnerPositions
     }
 
-    private fun isWinnerDiagonally(position: Pair<Int, Int>, grid: List<List<Cell>>): Boolean {
+    fun isWinnerDiagonally1(position: Pair<Int, Int>, grid: List<List<Cell>>): Set<Pair<Int, Int>> {
         val currentPlayer = _gameState.value.currentPlayer
         val cell = if (currentPlayer == Player.P_X) Cell.X else Cell.O
 
-        fun isWinnerDiagonally1(): Boolean {
-            for (i in 0..grid.size - 1) {
-                val mCell = grid[i][i]
-                if (mCell != cell) return false
-            }
-            return true
+        var winnerPositions = mutableSetOf<Pair<Int, Int>>()
+        for (i in 0..grid.size - 1) {
+            val mCell = grid[i][i]
+            if (mCell != cell) return emptySet()
+            else winnerPositions.add(Pair(i, i))
         }
+        return winnerPositions
+    }
 
-        fun isWinnerDiagonally2(): Boolean {
-            for (i in 0..grid.size - 1) {
-                val mCell = grid[grid.size - 1 - i][i]
-                if (mCell != cell) return false
-            }
-            return true
+    fun isWinnerDiagonally2(position: Pair<Int, Int>, grid: List<List<Cell>>): Set<Pair<Int, Int>> {
+        val currentPlayer = _gameState.value.currentPlayer
+        val cell = if (currentPlayer == Player.P_X) Cell.X else Cell.O
+
+        var winnerPositions = mutableSetOf<Pair<Int, Int>>()
+        for (i in 0..grid.size - 1) {
+            val mCell = grid[grid.size - 1 - i][i]
+            if (mCell != cell) return emptySet()
+            else winnerPositions.add(Pair(grid.size - 1 - i, i))
         }
-
-        return isWinnerDiagonally1() || isWinnerDiagonally2()
+        return winnerPositions
     }
 }
